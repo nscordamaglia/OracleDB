@@ -1,0 +1,6 @@
+y://Vtex/Proponi_Arnet_Play.txt;txt;pap
+y://Vtex/Proponi_Telecom_Equipos.txt;txt;pte
+y://Vtex/Proponi_Telecom_PlanesyServicios.txt;txt;ptpys
+y://Vtex/Proponi_Arnet_BAF.txt;txt;pab
+y://Vtex/Reporte Arnet Vtex.xls;xls;vtex
+y://Vtex/Argentina_Digital.xls;xls;th

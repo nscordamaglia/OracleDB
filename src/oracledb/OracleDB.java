@@ -50,9 +50,10 @@ public class OracleDB {
              */
                       //Borro y creo nuevamente el archivo campana_mails.txt
                       SaveFile save = new SaveFile();
-                      save.Exist("y://Vtex/config/campana_mail.txt");  
+                      ConfigManager.setPath("config.properties");
+                      save.Exist(ConfigManager.getAppSetting("tabla_mail"));  
                       
-                      String path =   "y://Vtex/lista_path.txt";
+                      String path =   ConfigManager.getAppSetting("path_lista");
                       File file = new File(path);
                       Scanner s = new Scanner(file);
                       //System.out.println(file.getName());
@@ -73,9 +74,12 @@ public class OracleDB {
                             File f = new File(form);
                             if(f.exists()){
                                 
+                                /* 
+                                 * update determina si encontro un formulario para procesar luego de insertar en tzoom_1
+                                 * comentar en caso de necesitar no hacer update en las pruebas junto con los db close/move
+                                 */
                                     update = true;
                                     db.Insert();
-                                    //Report.getInstance().setDeleted(0);//reinicio el contador de registros eliminados por linea mal
                                     db.getFile().close();
                                     db.getFile().move();
                             }else{
@@ -90,10 +94,14 @@ public class OracleDB {
                           //necesito que exista un form como minimo para actualizar la db, caso contrario estaria vacia
                             db.Update();
                             System.out.println("fin update");
-                            db.report(mail);
+                            
                           //cargo campana_mails.txt en tabla de mismo nombre
                             db.campanaMailing();
                             db.transmision();
+                            
+                          //envio reporte por mail
+                            db.report(mail);
+                            
                       }else{
                       
                             System.out.println("Sin formularios para actualizar la DB");

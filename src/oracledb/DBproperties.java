@@ -18,11 +18,11 @@ import org.json.simple.parser.ParseException;
 class DBproperties {
 
     private String input;
-    private int tlinea,apellido,nombre,dni,mail,refcode,lineateco,fecha,contacto,designname;
+    private int tlinea,apellido,nombre,dni,mail,refcode,lineateco,fecha,contacto,designname,domicilio,producto;
     private String observaciones;
     private ArrayList<String> row = new ArrayList<String>();
     private ArrayList<Integer> headerIndex = new ArrayList<Integer>();
-    private String[] headerName = {"tlinea","apellido","nombre","dni","mail","refcode","designname","lineateco","contacto","fecha"};
+    private String[] headerName = {"tlinea","apellido","nombre","dni","mail","refcode","designname","lineateco","contacto","fecha","domicilio","producto"};
     private FileReader file;
     private ArrayList<String> rowHeader = new ArrayList<String>();
     private String lineOftxt;
@@ -56,12 +56,15 @@ class DBproperties {
        lineateco = headerIndex.get(7);
        contacto = headerIndex.get(8);
        fecha = headerIndex.get(9);
+       domicilio = headerIndex.get(10);
+       producto = headerIndex.get(11);
        
-       Integer[] arrayObsIndex = {fecha,mail,dni,refcode,designname,contacto};
-       String[]  arrayObsText  = {"Fecha Formulario : ","; Mail : ","; DNI : ","; Cod/ID Prod : ","; Producto : ",";Tel Contacto: "};
-       String[]  arrayObsValidate = {"fecha","mail","dni","refcode","designname","contacto"};
+       Integer[] arrayObsIndex =        {fecha,                   mail,       dni,       refcode,           producto,       contacto,          domicilio};
+       String[]  arrayObsText  =        {"Fecha Formulario : ","; Mail : ","; DNI : ","; Cod/ID Prod : ","; Producto : ","; Tel Contacto: ","; Domicilio: "};
+       String[]  arrayObsValidate =     {"fecha",                 "mail",     "dni",     "refcode",         "producto",     "contacto",        "domicilio"};
        
-       for (int i = 0; i<6; i++){
+     
+       for (int i = 0; i<arrayObsIndex.length; i++){
        //defino el string observaciones
            if (arrayObsIndex[i] != 99){
            
@@ -101,7 +104,12 @@ class DBproperties {
                    arrayInputText[j] = "NULL";
                
                }else{
-                        arrayInputText[j] = field;
+                        int lenght = field.length();
+                        if (lenght>60){
+                            arrayInputText[j] = field.substring(0, 60);
+                        }else{
+                            arrayInputText[j] = field;
+                        }
                     }      
            }else{
                
@@ -128,11 +136,13 @@ class DBproperties {
 
                 lineOftxt = lineOftxt + ";" + arrayInputText[0];
                 SaveFile save = new SaveFile();
-                save.file(lineOftxt.trim(), "y://Vtex/config/campana_mail.txt");
+                ConfigManager.setPath("config.properties");
+                save.file(lineOftxt.trim(), ConfigManager.getAppSetting("tabla_mail"));
             }
        
        }else{
        
+           System.out.println("Entra por insert null");
            input = "NULL";
        }
       
@@ -316,6 +326,7 @@ class DBproperties {
                 regex = "[^0]{1}[0-9]{1,22}";
                 break;
                 
+                            
             default:
                 regex = ".*";
                 break;

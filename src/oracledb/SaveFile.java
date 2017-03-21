@@ -21,7 +21,7 @@ class SaveFile {
     
             public void file(String data, String path){
                 
-                //creo el archivo para guardar la hash para otro momento
+                
                             File file = null;
                             FileWriter filew = null;
                             PrintWriter pw = null;

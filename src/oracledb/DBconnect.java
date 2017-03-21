@@ -99,25 +99,27 @@ public class DBconnect {
      */
     public DBconnect() {
         
+                ConfigManager.setPath("config.properties");
                 Locale en = new Locale("en", "US");
                 System.out.println(en.getDisplayName(en));
                 Locale.setDefault(new Locale ("en", "US"));
         
-                System.out.println("-------- Oracle JDBC Connection Testing ------");
+                System.out.println("-------- DB JDBC Connection Testing ------");
 
 		try {
 
-			Class.forName("oracle.jdbc.driver.OracleDriver");
+			    Class.forName(ConfigManager.getAppSetting("db_class"));
+                          
 
 		} catch (ClassNotFoundException e) {
 
-			System.out.println("Where is your Oracle JDBC Driver?");
+			System.out.println("Where is your DB JDBC Driver?");
 			e.printStackTrace();
 			return;
 
 		}
 
-		System.out.println("Oracle JDBC Driver Registered!");
+		System.out.println("DB JDBC Driver Registered!");
     }
     
     
@@ -137,7 +139,7 @@ public class DBconnect {
                         /*select * from Tmp_Tzoom_1 --> base auxiliar para guardar la info extraida del archivo*/
                                   ConfigManager.setPath("config.properties");
                                   connection = DriverManager.getConnection(
-                                                  "jdbc:oracle:thin:@//zoom:1523/zoom",ConfigManager.getAppSetting("user"),ConfigManager.getAppSetting("pass"));
+                                                  ConfigManager.getAppSetting("db_ref"),ConfigManager.getAppSetting("user"),ConfigManager.getAppSetting("pass"));
                                   connection.setAutoCommit(false);
                                   Statement stmt = connection.createStatement();
                                   String sql = getInput();
@@ -278,7 +280,7 @@ public class DBconnect {
         
         }
         
-                      ConfigManager.setPath("y://Vtex/config/updating_form.properties");
+                                  ConfigManager.setPath(ConfigManager.getAppSetting("path_update"));
                       String update_array = ConfigManager.getAppSetting("update_array");
                       SaveBrief();
                       for (int i = 0;i<update_array.split(";").length;i++){
@@ -310,9 +312,9 @@ public class DBconnect {
     void report(SendMail mail) {
         try {
             connection = DriverManager.getConnection(
-                                                  "jdbc:oracle:thin:@//zoom:1523/zoom",ConfigManager.getAppSetting("user"),ConfigManager.getAppSetting("pass"));
+                                                  ConfigManager.getAppSetting("db_ref"),ConfigManager.getAppSetting("user"),ConfigManager.getAppSetting("pass"));
             connection.setAutoCommit(false);
-            ConfigManager.setPath("y://Vtex/config/updating_form.properties");
+                        ConfigManager.setPath(ConfigManager.getAppSetting("path_update"));
             Statement stmt = connection.createStatement();
             String sql = ConfigManager.getAppSetting("info_tzoom");
             ResultSet rs = stmt.executeQuery(sql);
@@ -326,7 +328,7 @@ public class DBconnect {
 
 
               }
-            ConfigManager.setPath("y://Vtex/config/updating_form.properties");
+                        ConfigManager.setPath(ConfigManager.getAppSetting("path_update"));
             Statement stmt1 = connection.createStatement();
             String sql1 = ConfigManager.getAppSetting("info_tzoom_del");
             ResultSet rs1 = stmt1.executeQuery(sql1);
@@ -352,45 +354,89 @@ public class DBconnect {
     }
 
     void cleanDB() {
+        
+        String log,msj;
         try {     
             ConfigManager.setPath("config.properties");
             connection = DriverManager.getConnection(
-                                                  "jdbc:oracle:thin:@//zoom:1523/zoom",ConfigManager.getAppSetting("user"),ConfigManager.getAppSetting("pass"));
+                                                  ConfigManager.getAppSetting("db_ref"),ConfigManager.getAppSetting("user"),ConfigManager.getAppSetting("pass"));
             connection.setAutoCommit(false);
-            ConfigManager.setPath("y://Vtex/config/updating_form.properties");
+            ConfigManager.setPath(ConfigManager.getAppSetting("path_update"));
             Statement stmt = connection.createStatement();
-                       
-            for(int i=1;i<5;i++){
-                                  String sql = ConfigManager.getAppSetting("delete"+i);
+            String array = ConfigManager.getAppSetting("clean_tables");
+            int lenght_array = array.split(";").length;
+            for(int i=0;i<lenght_array;i++){
+                                  String sql = array.split(";")[i];
                                   System.out.println(sql);
-                                  stmt.executeUpdate(sql);
+                                  try{
+                                      stmt.executeUpdate(sql);
+                                  }catch(SQLException ex){
+                                  
+                                      Logger.getLogger(DBconnect.class.getName()).log(Level.SEVERE, null, ex);
+                                  }
             }
                                   connection.commit();
                                   stmt.close();
                                   connection.close();
         } catch (SQLException ex) {
             Logger.getLogger(DBconnect.class.getName()).log(Level.SEVERE, null, ex);
-            String msj = ex.getMessage().substring(0,9);            
-            SendMail mail = new SendMail();
-            mail.setMsj(msj);
-            mail.Ready();
-            System.exit(0);
+            msj = ex.getMessage().substring(0,9);    
+            /*
+                ORA-28001: the password has expired
+                ORA-01017: invalid username/password; logon denied
+                ORA-28000: the account is locked
+             */
+            if (msj.equalsIgnoreCase("ORA-28001")){
+            
+                //corta el proceso y avisa por mail informando el problema con usuario
+                log = "the password has expired";
+                SendMail mail = new SendMail();
+                mail.setMsj(log);
+                mail.Ready();
+                System.exit(0);
+            
+            }else if(msj.equalsIgnoreCase("ORA-01017")){
+            
+                //corta el proceso y avisa por mail informando el problema con usuario
+                log = "invalid username/password; logon denied";
+                SendMail mail = new SendMail();
+                mail.setMsj(log);
+                mail.Ready();
+                System.exit(0);
+                        
+            }else if(msj.equalsIgnoreCase("ORA-28000")){
+            
+                //corta el proceso y avisa por mail informando el problema con usuario
+                log =  "the account is locked"; 
+                SendMail mail = new SendMail();
+                mail.setMsj(log);
+                mail.Ready();
+                System.exit(0);
+            
+            }
+            
             
         }
     }
 
     void campanaMailing() {
         String mail,tlinea;
+        Scanner scanner = null;
         try {
             //Leo linea por linea e inserto en tzoom_campana_mails
-            File campana = new File("y://Vtex/config/campana_mail.txt");
-            Scanner scanner = new Scanner(campana);
+            ConfigManager.setPath("config.properties");
+            File campana = new File(ConfigManager.getAppSetting("tabla_mail"));
+            scanner = new Scanner(campana);
             while (scanner.hasNextLine()){
             
                 String line = scanner.nextLine();
                 mail = line.split(";")[0];
                 tlinea = line.split(";")[1];
-                setInput("INSERT INTO tzoom_campana_mails (mail,tlinea) VALUES ('" + mail + "','" + tlinea.substring(0, 10) + "')");
+                if (tlinea.length()> 10){
+                
+                    tlinea = tlinea.substring(0, 10);
+                }
+                setInput("INSERT INTO tzoom_campana_mails (mail,tlinea) VALUES ('" + mail + "','" + tlinea + "')");
                 Connect();
                 
             
@@ -398,7 +444,8 @@ public class DBconnect {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(DBconnect.class.getName()).log(Level.SEVERE, null, ex);
         }
-        ConfigManager.setPath("y://Vtex/config/updating_form.properties");
+        scanner.close();
+                    ConfigManager.setPath(ConfigManager.getAppSetting("path_update"));
         setInput(ConfigManager.getAppSetting("grant_table"));
         Connect();
     }
@@ -413,9 +460,9 @@ public class DBconnect {
                * -->DBM.TRANSMICION_ZOOM_CCT.COPIA_REMOTA_XBRIEF(803048,'S',201611)*/
                 ConfigManager.setPath("config.properties");
                 connection = DriverManager.getConnection(
-                              "jdbc:oracle:thin:@//zoom:1523/zoom",ConfigManager.getAppSetting("user"),ConfigManager.getAppSetting("pass"));
+                              ConfigManager.getAppSetting("db_ref"),ConfigManager.getAppSetting("user"),ConfigManager.getAppSetting("pass"));
                 connection.setAutoCommit(false);
-                ConfigManager.setPath("y://Vtex/config/updating_form.properties");
+                            ConfigManager.setPath(ConfigManager.getAppSetting("path_update"));
                 /* EXTRAIGO BRIEF*/
                 Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(ConfigManager.getAppSetting("brief_transmit"));
@@ -443,7 +490,7 @@ public class DBconnect {
     }
 
     private void SaveBrief() {
-       ConfigManager.setPath("y://Vtex/config/updating_form.properties");
+                   ConfigManager.setPath(ConfigManager.getAppSetting("path_update"));
        
     }
 
@@ -453,9 +500,9 @@ public class DBconnect {
         try {
             ConfigManager.setPath("config.properties");
             connection = DriverManager.getConnection(
-                          "jdbc:oracle:thin:@//zoom:1523/zoom",ConfigManager.getAppSetting("user"),ConfigManager.getAppSetting("pass"));
+                          ConfigManager.getAppSetting("db_ref"),ConfigManager.getAppSetting("user"),ConfigManager.getAppSetting("pass"));
             connection.setAutoCommit(false);
-            ConfigManager.setPath("y://Vtex/config/updating_form.properties");
+                        ConfigManager.setPath(ConfigManager.getAppSetting("path_update"));
             sql_max_brief = ConfigManager.getAppSetting("select_max_brief");
             sql_campana = ConfigManager.getAppSetting("distinct_campana");
             /* busco campañas */

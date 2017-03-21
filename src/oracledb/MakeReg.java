@@ -47,7 +47,7 @@ class MakeReg {
          
         String update;
         
-        ConfigManager.setPath("y://Vtex/config/updating_form.properties");
+                    ConfigManager.setPath(ConfigManager.getAppSetting("path_update"));
         update = ConfigManager.getAppSetting(update_name);
         return update;
      

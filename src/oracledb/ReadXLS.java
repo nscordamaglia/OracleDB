@@ -122,8 +122,16 @@ public class ReadXLS extends FileReader{
                 Row row = ws.getRow(0);
                     for (int j = 0; j < colNum; j++){
                         Cell cell = row.getCell(j);
-                        String value = cell.toString();
-                        array.add(j,value);
+                        
+                        try{
+                            //guardo la cabecera detectada
+                            String value = cell.toString();
+                            array.add(j,value);
+                            
+                        }catch(NullPointerException ex){ 
+                            //ante la posibilidad de que venga sucio el archivo y el conteo de cabecera este equivocado
+                            array.add(j,"vacio");
+                        }
                     }
                     
             

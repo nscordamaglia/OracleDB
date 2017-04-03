@@ -233,8 +233,13 @@ class DBproperties {
 		}*/
 
 	}catch (ParseException e) {
+            //falla de parseo
 		e.printStackTrace();
-	}
+                
+	}catch(NullPointerException e){
+                //si no encentra el tag
+                e.printStackTrace();
+        }
         return destino;
     }
 

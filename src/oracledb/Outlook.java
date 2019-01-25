@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package oracledb;
 
 import java.awt.Desktop;
@@ -15,12 +11,12 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author u189299
+ * @author Nicolas Scordamaglia
  */
 public class Outlook {
-    
+
      public void sendMail(String msj)  {
-         
+
          msj = urlEncode(msj);
          try {
              try {
@@ -31,11 +27,11 @@ public class Outlook {
          } catch (URISyntaxException ex) {
              Logger.getLogger(Outlook.class.getName()).log(Level.SEVERE, null, ex);
          }
-    
+
 
         }
-     
-     
+
+
                 private static final String urlEncode(String str) {
                try {
                    return URLEncoder.encode(str, "UTF-8").replace("+", "%20");

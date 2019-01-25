@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package oracledb;
 
 import java.io.File;
@@ -18,7 +14,7 @@ import org.apache.commons.io.*;
 
 /**
  *
- * @author u189299
+ * @author Nicolas Scordamaglia
  */
 public class ReadTXT extends FileReader{
 
@@ -47,10 +43,10 @@ public class ReadTXT extends FileReader{
         this.txt = txt;
     }
 
-    
+
     public int getNumCol() {
         File file = new File(getPath());
-        
+
         try {
             Scanner sc = new Scanner(file);
             if(sc.hasNextLine()){
@@ -58,19 +54,19 @@ public class ReadTXT extends FileReader{
                         numCol = row.split(";").length;
                         sc.close();
                       }
-            
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ReadTXT.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return numCol;
     }
 
     public void setNumCol(int numCol) {
         this.numCol = numCol;
     }
-    
-    
+
+
 
     public String getPath() {
         return path;
@@ -103,7 +99,7 @@ public class ReadTXT extends FileReader{
     public void setRowposition(int rowposition) {
         this.rowposition = rowposition;
     }
-    
+
     public ReadTXT(String path,String prop) {
         super(path,prop);
         try {
@@ -117,11 +113,11 @@ public class ReadTXT extends FileReader{
             Logger.getLogger(ReadTXT.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @Override
     public void run() {
-        
-                  
+
+
                   System.out.println(txt.getName());
                   if(s.hasNextLine()){
                     String row = s.nextLine().replace("\t", ";");
@@ -132,69 +128,69 @@ public class ReadTXT extends FileReader{
 
                     }
                   }
-                 
-            
+
+
     }
 
     @Override
     public boolean hasRow() {
         boolean hasrow = false;
-       
+
             if(s.hasNextLine()){
-            
+
                 hasrow = true;
                 System.out.println("hay registro");
-            
+
             }else{
-            
+
                 hasrow = false;
                 System.out.println("no hay registro");
                 s.close();
-            
+
             }
-        
+
         return hasrow;
     }
 
     @Override
     public ArrayList<String> readHeader() {
-        
+
         ArrayList<String> array = new ArrayList<String>();
-        
-        
+
+
                   //System.out.println(txt.getName());
                   String row = s.nextLine().replace("\t", ";");
                   //System.out.println("header: " + row);
                   for (int i = 0;i<row.split(";").length;i++){
-                  
+
                       array.add(i,row.split(";")[i]);
-                  
+
                   }
-                 
-           
+
+
         return array;
     }
 
     @Override
     void move() {
-        
+
         DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH.mm");
         Date date = new Date();
         try {
             File afile =FileUtils.getFile(getPath());
             File bfile =FileUtils.getFile("y://Vtex/olds/" + dateFormat.format(date) + "_" +  afile.getName());
             FileUtils.moveFile(afile,bfile);
-            
+
         } catch (IOException ex) {
             Logger.getLogger(ReadTXT.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-    	
+
     }
 
     @Override
     void delete() {
-       
+
     }
 
     @Override
@@ -204,8 +200,8 @@ public class ReadTXT extends FileReader{
         s.close();
         }catch(NullPointerException e){}
     }
-    
-    
-    
-    
+
+
+
+
 }

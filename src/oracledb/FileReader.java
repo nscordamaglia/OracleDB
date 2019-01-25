@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package oracledb;
 
 
@@ -9,10 +5,10 @@ import java.util.ArrayList;
 
 /**
  *
- * @author u189299
+ * @author Nicolas Scordamaglia
  */
 abstract public class FileReader {
-    
+
     private String path;
     private String type;
     private ArrayList rowToArray;
@@ -27,9 +23,9 @@ abstract public class FileReader {
     public void setProp(String prop) {
         this.prop = prop;
     }
-    
-    
-    
+
+
+
     public int getNumCol() {
         return numCol;
     }
@@ -69,38 +65,38 @@ abstract public class FileReader {
     public void setRowposition(int rowposition) {
         this.rowposition = rowposition;
     }
- 
-    
-    
+
+
+
 
     FileReader(String path,String prop) {
         this.path = path;
         this.rowposition = 0;
         this.prop = prop;
     }
-    
+
     //simple way to check for both types of excel files
     public boolean isValid(){
         return false;
 
     }
-    
+
     public void run(){
-    
+
         /* metodo que lee registros */
     }
-    
+
     public boolean hasRow(){
-        
+
         /* metodo que devuelve si existe un registro para leer*/
         return false;
     }
-    
+
     public ArrayList<String> readHeader(){
-        
+
         /* metodo que lee la cabecera*/
         return null;
-        
+
     }
 
     void move() {
@@ -114,5 +110,5 @@ abstract public class FileReader {
     void close() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

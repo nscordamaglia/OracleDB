@@ -13,7 +13,7 @@ import org.json.simple.parser.ParseException;
 
 /**
  *
- * @author u189299
+ * @author Nicolas Scordamaglia
  */
 class DBproperties {
 

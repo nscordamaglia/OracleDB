@@ -1,12 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package oracledb;
 
 /**
  *
- * @author u189299
+ * @author Nicolas Scordamaglia
  */
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,9 +13,9 @@ import java.util.Properties;
  * @author Nicolas Scordamaglia
  */
 class ConfigManager {
-    
+
     private static Properties p = null;
-    private static String path;    
+    private static String path;
 
     public static String getPath() {
         return path;
@@ -28,17 +24,17 @@ class ConfigManager {
     public static void setPath(String path) {
         ConfigManager.path = path;
     }
-    
-    
-	
+
+
+
 	private static Properties getInstance() {
 		if (p==null) {
 			p = new Properties();
-			
+
 		}
 		return p;
 	}
-	
+
         /**
          * Metodo que toma la variable como clave de configuracion y devuelve el valor del mismo configurado
          * de forma estatica en un archivo externo. Dicha configuracion esta normalizada como clave=valor
@@ -53,4 +49,3 @@ class ConfigManager {
 		return prop.getProperty(appSetting);
 	}
 }
-

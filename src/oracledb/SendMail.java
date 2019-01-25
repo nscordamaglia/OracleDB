@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package oracledb;
 import java.util.Properties;
 import javax.mail.*;
@@ -10,10 +6,10 @@ import javax.mail.internet.MimeMessage;
 
 /**
  *
- * @author u189299
+ * @author Nicolas Scordamaglia
  */
 public class SendMail {
-        
+
       private String to;
       private String from;
       private String host;
@@ -26,55 +22,55 @@ public class SendMail {
     public void setMsj(String msj) {
         this.msj = msj;
     }
-      
-      
+
+
     public void Ready (){
-    
+
         ConfigManager.setPath("config.properties");
-    
-        // Recipient's email ID needs to be mentioned.
+
+        // Destino
        to = ConfigManager.getAppSetting("mailto");
 
-      // Sender's email ID needs to be mentioned
+      // Origen
        from = ConfigManager.getAppSetting("mailfrom");
-              
-      // Assuming you are sending email from localhost
+
+      // smtp
        host = ConfigManager.getAppSetting("smtp");
 
-     
-            // Get system properties
+
+            // propiedades de sistema
       Properties properties = System.getProperties();
 
-      // Setup mail server
+      // configurar servidor
       properties.setProperty("mail.smtp.host", host);
 
-      // Get the default Session object.
+      // sesion por defecto
       Session session = Session.getDefaultInstance(properties);
 
       try{
-         // Create a default MimeMessage object.
+         // Crear mensaje
          MimeMessage message = new MimeMessage(session);
 
-         // Set From: header field of the header.
+         // Configurar origen
          message.setFrom(new InternetAddress(from));
 
-         // Set To: header field of the header.
+         // Configurar destino
          message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 
-         // Set Subject: header field
+         // Configurar asunto
          message.setSubject("Automatización de formularios");
 
-         // Send the actual HTML message, as big as you like
+         // Crear mensaje
          message.setContent(  msj, "text/plain" );
 
-         // Send message
+         // Enviar mensaje
          Transport.send(message);
          System.out.println("Sent message successfully....");
       }catch (MessagingException mex) {
          mex.printStackTrace();
          
       }
-    
+
     }
 
 }

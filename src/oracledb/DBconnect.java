@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package oracledb;
 
 
@@ -24,10 +20,10 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author u189299
+ * @author Nicolas Scordamaglia
  */
 public class DBconnect {
-    
+
     private Connection connection = null;
     private String msj = null;
     private String path;
@@ -44,8 +40,8 @@ public class DBconnect {
     public void setFile(FileReader file) {
         this.file = file;
     }
-    
-    
+
+
 
     public String getProp() {
         return prop;
@@ -54,8 +50,8 @@ public class DBconnect {
     public void setProp(String prop) {
         this.prop = prop;
     }
-    
-    
+
+
 
     public String getType() {
         return type;
@@ -64,8 +60,8 @@ public class DBconnect {
     public void setType(String type) {
         this.type = type;
     }
-    
-    
+
+
 
     public String getPath() {
         return path;
@@ -74,9 +70,9 @@ public class DBconnect {
     public void setPath(String path) {
         this.path = path;
     }
-    
 
-    
+
+
     public String getInput() {
         return input;
     }
@@ -84,10 +80,10 @@ public class DBconnect {
     public void setInput(String input) {
         this.input = input;
     }
-    
-    
 
-       
+
+
+
 
     /*Currently it fetches this setting from the VM variable user.language (which is set automatically
      *by setting the current locale, or on startup from the system environment).
@@ -98,18 +94,18 @@ public class DBconnect {
      *ORA-12705: Cannot access NLS data files or invalid environment specified
      */
     public DBconnect() {
-        
+
                 ConfigManager.setPath("config.properties");
                 Locale en = new Locale("en", "US");
                 System.out.println(en.getDisplayName(en));
                 Locale.setDefault(new Locale ("en", "US"));
-        
+
                 System.out.println("-------- DB JDBC Connection Testing ------");
 
 		try {
 
 			    Class.forName(ConfigManager.getAppSetting("db_class"));
-                          
+
 
 		} catch (ClassNotFoundException e) {
 
@@ -121,14 +117,14 @@ public class DBconnect {
 
 		System.out.println("DB JDBC Driver Registered!");
     }
-    
-    
+
+
     private void Connect(){
-    
-                
-    
+
+
+
                 try {
-              
+
                         //Busca en la configuracion la lista de archivos
                         //itera n veces ejecutando las acciones por cada archivo
                         //detecta si es txt,xls o csv para ejecutar una accion diferente para leerlo
@@ -148,10 +144,10 @@ public class DBconnect {
                                   connection.commit();
                                   stmt.close();
                                   connection.close();
-                                  
+
                                   /*
                                    * ejecucion de sentencia de transmision de brief a AC
-                                   * 
+                                   *
                                    * -->DBM.TRANSMICION_ZOOM_CCT.COPIA_REMOTA_XBRIEF(803048,'S',201611)
                                     CallableStatement procin = connection.prepareCall ("begin DBM.TRANSMICION_ZOOM_CCT.COPIA_REMOTA_XBRIEF (?,?,?); end;");
                                     procin.setInt(1, 803048);
@@ -161,7 +157,7 @@ public class DBconnect {
                                     procin.close();
                                   /*
                                    * ejecucion de sentencia para obtener resultado
-                                   * 
+                                   *
                                    * ResultSet rs = stmt.executeQuery(sql);
                                         while(rs.next()){
 
@@ -175,12 +171,12 @@ public class DBconnect {
                                   }
 
                                   */
-                    
+
 		} catch (SQLException e) {
 
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
-			
+
 
 		}
 
@@ -189,62 +185,62 @@ public class DBconnect {
 		} else {
 			System.out.println("Failed to make connection!");
 		}
-    
-    
-    
+
+
+
     }
 
-   
+
 
     public void Insert() {
-        
+
         int read_reg = 0;
-            
-        
+
+
             System.out.println("voy a evaluar el formulario");
             //segun sea el tipo de archivo voy a instanciar la clare reader correspondiente
             switch (getType()){
-            
+
                 case "xls":
                     file = new ReadXLS(getPath(),getProp());
                     file.setType(getType());
                     break;
-                    
+
                 case "txt":
                     file = new ReadTXT(getPath(),getProp());
                     file.setType(getType());
                     break;
-            
+
             }
-            
+
             reg = new MakeReg(file);
-            //escribo en msj --> Formulario XXXX registros eliminados 
+            //escribo en msj --> Formulario XXXX registros eliminados
             Report.getInstance().setMsj(Report.getInstance().getMsj() + "\n Formulario " + Report.getInstance().getForm(file.getProp())  );
             while(reg.isRow()){
-             
+
                 //por cada registro leido del archivo, debe haber un registro insertado si viene nulo no inserto nada
                 String input = reg.Format();
                 if (!input.equals("NULL")){
-                
+
                     setInput(input);
                     Connect();
                     read_reg++;
                 }
                 //acumulo registros leidos
-                
-            
+
+
             }
             Report.getInstance().setMsj(Report.getInstance().getMsj()  + " --> " + read_reg + " registros leidos.");
             //acumulo la cantidad de registros eliminados y escribo en msj --> X (será cero en caso de no eliminar ninguno)
             //escribo en msj --> de X registros leidos \n
-            
-        
-       
-      
+
+
+
+
     }
 
     void Update() {
-        
+
         String fmonth = null;
         Date date = new Date();
         Calendar cal = Calendar.getInstance();
@@ -252,7 +248,7 @@ public class DBconnect {
         int month = cal.get(Calendar.MONTH);
         //System.out.println("estamos en el mes: " + month);
         switch (month){
-        
+
             case 0:
                 case 1:
                     case 2:
@@ -264,49 +260,49 @@ public class DBconnect {
                                             case 8:
                                               fmonth = String.valueOf(month+1);
                                                 break;
-                                                
+
                                             case 9:
                                                 fmonth = "O";
                                                 break;
-                                                
+
                                             case 10:
                                                 fmonth = "N";
                                                 break;
-                                            
+
                                             case 11:
                                                 fmonth = "D";
                                                 break;
-                                                
-        
+
+
         }
-        
+
                                   ConfigManager.setPath(ConfigManager.getAppSetting("path_update"));
                       String update_array = ConfigManager.getAppSetting("update_array");
                       SaveBrief();
                       for (int i = 0;i<update_array.split(";").length;i++){
-                      
+
                           if(update_array.split(";")[i].equalsIgnoreCase("update_campana")){
-                          
+
                             System.out.println("UPDATE Tmp_Tzoom_1");
                             String aux = reg.Update(update_array.split(";")[i]).replace("%", fmonth);
                             setInput(aux);
                             setInput(getInput().replace(":", "="));
-                          
+
                           }else if(update_array.split(";")[i].equalsIgnoreCase("update_brief")){
-                          
+
                               updateBrief();
-                          
+
                           }else{
-                              
+
                             System.out.println("UPDATE Tmp_Tzoom_1");
                             setInput(reg.Update(update_array.split(";")[i]));
                             setInput(getInput().replace(":", "="));
                           }
                           Connect();
-                      
+
                       }
-                
-        
+
+
           }
 
     void report(SendMail mail) {
@@ -323,8 +319,8 @@ public class DBconnect {
             while(rs.next()){
 
             msj = msj + "\n" + rs.getString("nro_brief")+ "\t" + rs.getString("campana")+"\t" + rs.getString("subcam")+"\t\t" + rs.getString("count(*)");
-            
-            
+
+
 
 
               }
@@ -336,8 +332,8 @@ public class DBconnect {
             while(rs1.next()){
 
             msj = msj + "\n" + rs1.getString("nro_brief")+ "\t\t" + rs1.getString("campana")+"\t\t" + rs1.getString("lote")+"\t\t" + rs1.getString("count(*)");
-            
-            
+
+
 
 
               }
@@ -350,13 +346,13 @@ public class DBconnect {
         } catch (SQLException ex) {
             Logger.getLogger(DBconnect.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
     void cleanDB() {
-        
+
         String log,msj;
-        try {     
+        try {
             ConfigManager.setPath("config.properties");
             connection = DriverManager.getConnection(
                                                   ConfigManager.getAppSetting("db_ref"),ConfigManager.getAppSetting("user"),ConfigManager.getAppSetting("pass"));
@@ -371,7 +367,7 @@ public class DBconnect {
                                   try{
                                       stmt.executeUpdate(sql);
                                   }catch(SQLException ex){
-                                  
+
                                       Logger.getLogger(DBconnect.class.getName()).log(Level.SEVERE, null, ex);
                                   }
             }
@@ -380,42 +376,42 @@ public class DBconnect {
                                   connection.close();
         } catch (SQLException ex) {
             Logger.getLogger(DBconnect.class.getName()).log(Level.SEVERE, null, ex);
-            msj = ex.getMessage().substring(0,9);    
+            msj = ex.getMessage().substring(0,9);
             /*
                 ORA-28001: the password has expired
                 ORA-01017: invalid username/password; logon denied
                 ORA-28000: the account is locked
              */
             if (msj.equalsIgnoreCase("ORA-28001")){
-            
+
                 //corta el proceso y avisa por mail informando el problema con usuario
                 log = "the password has expired";
                 SendMail mail = new SendMail();
                 mail.setMsj(log);
                 mail.Ready();
                 System.exit(0);
-            
+
             }else if(msj.equalsIgnoreCase("ORA-01017")){
-            
+
                 //corta el proceso y avisa por mail informando el problema con usuario
                 log = "invalid username/password; logon denied";
                 SendMail mail = new SendMail();
                 mail.setMsj(log);
                 mail.Ready();
                 System.exit(0);
-                        
+
             }else if(msj.equalsIgnoreCase("ORA-28000")){
-            
+
                 //corta el proceso y avisa por mail informando el problema con usuario
-                log =  "the account is locked"; 
+                log =  "the account is locked";
                 SendMail mail = new SendMail();
                 mail.setMsj(log);
                 mail.Ready();
                 System.exit(0);
-            
+
             }
-            
-            
+
+
         }
     }
 
@@ -428,18 +424,18 @@ public class DBconnect {
             File campana = new File(ConfigManager.getAppSetting("tabla_mail"));
             scanner = new Scanner(campana);
             while (scanner.hasNextLine()){
-            
+
                 String line = scanner.nextLine();
                 mail = line.split(";")[0];
                 tlinea = line.split(";")[1];
                 if (tlinea.length()> 10){
-                
+
                     tlinea = tlinea.substring(0, 10);
                 }
                 setInput("INSERT INTO tzoom_campana_mails (mail,tlinea) VALUES ('" + mail + "','" + tlinea + "')");
                 Connect();
-                
-            
+
+
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(DBconnect.class.getName()).log(Level.SEVERE, null, ex);
@@ -451,12 +447,12 @@ public class DBconnect {
     }
 
     void transmision() {
-        
+
         int brief = 0, aniomes = 0;
         try {
             /*
                * ejecucion de sentencia de transmision de brief a AC
-               * 
+               *
                * -->DBM.TRANSMICION_ZOOM_CCT.COPIA_REMOTA_XBRIEF(803048,'S',201611)*/
                 ConfigManager.setPath("config.properties");
                 connection = DriverManager.getConnection(
@@ -467,13 +463,13 @@ public class DBconnect {
                 Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(ConfigManager.getAppSetting("brief_transmit"));
                                         while(rs.next()){
-                                        
+
                                             brief = Integer.parseInt(rs.getString("nro_brief"));
                                         }
-                                        
+
                 DateFormat dateFormat = new SimpleDateFormat("YYYYMM");
                 Date date = new Date();
-                aniomes = Integer.parseInt(dateFormat.format(date)); 
+                aniomes = Integer.parseInt(dateFormat.format(date));
                 System.out.println("Se transmitira el brief " + brief + " en " + aniomes);
                 /*CallableStatement procin = connection.prepareCall ("begin DBM.TRANSMICION_ZOOM_CCT.COPIA_REMOTA_XBRIEF (?,?,?); end;");
                 procin.setInt(1, brief);
@@ -491,7 +487,7 @@ public class DBconnect {
 
     private void SaveBrief() {
                    ConfigManager.setPath(ConfigManager.getAppSetting("path_update"));
-       
+
     }
 
     private void updateBrief() {
@@ -509,45 +505,45 @@ public class DBconnect {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sql_campana);
                                     while(rs.next()){
-                                    
-                                       
+
+
                                         arrayCampana.add(rs.getString("campana"));
                                         System.out.println(rs.getString("campana"));
-                                        
+
                                     }
-            
+
             connection.commit();
-            stmt.close();                       
+            stmt.close();
             /* busco max brief  */
             Statement stmt1 = connection.createStatement();
             ResultSet rs1 = stmt1.executeQuery(sql_max_brief);
                                     while(rs1.next()){
-                                    
-                                       
+
+
                                         brief = rs1.getString("nro_brief");
                                         System.out.println(rs1.getString("nro_brief"));
-                                        
-                                    } 
+
+                                    }
             connection.commit();
             stmt1.close();
             connection.close();
             int size = arrayCampana.size();
             for (int i=0;i<size;i++){
-            
+
                 int nro_brief = Integer.parseInt(brief) + i;
                 sql_brief = ConfigManager.getAppSetting("update_brief").replace("%", "(" + nro_brief) + ") where campana='" + arrayCampana.get(i) + "'";
                 System.out.println(sql_brief);
                 setInput(sql_brief);
                 Connect();
-            
+
             }
-            
-            
+
+
         } catch (SQLException ex) {
             Logger.getLogger(DBconnect.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    
-                
+
+
 }

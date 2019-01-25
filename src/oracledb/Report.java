@@ -1,12 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package oracledb;
 
 /**
  *
- * @author u189299
+ * @author Nicolas Scordamaglia
  */
 public class Report {
     String msj;
@@ -19,8 +15,8 @@ public class Report {
     public void setDeleted(int deleted) {
         this.deleted = deleted;
     }
-    
-    
+
+
 
     public String getMsj() {
         return msj;
@@ -29,13 +25,13 @@ public class Report {
     public void setMsj(String msj) {
         this.msj = msj;
     }
-    
-    
+
+
     private Report() {
-        
-        
+
+
     }
-    
+
     public static Report getInstance() {
         return ReportHolder.INSTANCE;
     }
@@ -43,44 +39,44 @@ public class Report {
     String getForm(String prop) {
         String form = null;
         switch(prop){
-        
+
             case "pap":
-                form = "Proponi Arnet Play";
+                form = "Proponi Product Play";
                 break;
-            
+
             case "ptpys":
-                form = "Proponi Telecom Planes y Servicios";
+                form = "Proponi provider Planes y Servicios";
                 break;
-            
+
             case "pab":
-                form = "Proponi Arnet BAF";
+                form = "Proponi Product BAF";
                 break;
-                
+
             case "pte":
-                form = "Proponi Telecom Equipos";
-                break;    
-             
+                form = "Proponi provider Equipos";
+                break;
+
             case "vtex":
                 form = "VTEX";
                 break;
-                
+
             case "th":
-                form = "TFORM ARGENTINA DIGITAL";
+                form = "TFORM Product DIGITAL";
                 break;
-                
+
             case "ta6mg":
-                form = "TFORM ARNET 6MB";
+                form = "TFORM Product 6MB";
                 break;
-                
+
             case "ta20mg":
-                form = "TFORM ARNET 20MB";
-                break;    
-        
+                form = "TFORM Product 20MB";
+                break;
+
         }
-        
+
         return form;
     }
-    
+
     private static class ReportHolder {
 
         private static final Report INSTANCE = new Report();

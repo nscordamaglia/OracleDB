@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package oracledb;
 
 import java.io.File;
@@ -25,10 +21,10 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 /**
  *
- * @author u189299
+ * @author Nicolas Scordamaglia
  */
 public class ReadXLS extends FileReader{
-    
+
     private String path;
     private String type;
     private ArrayList<String> rowToArray = new ArrayList<String>();
@@ -52,8 +48,8 @@ public class ReadXLS extends FileReader{
     public void setNumCol(int numCol) {
         this.numCol = numCol;
     }
-    
-    
+
+
 
     public String getPath() {
         return path;
@@ -99,43 +95,43 @@ public class ReadXLS extends FileReader{
 
     @Override
     public boolean isValid() {
-       
+
         return super.isValid();
     }
 
-    
+
     @Override
     public ArrayList<String> readHeader() {
-        
+
         ArrayList<String> array = new ArrayList<String>();
-        
+
         FileInputStream fis = null;
         try {
             File excel =  new File (path);
             fis = new FileInputStream(excel);
-            Workbook wb = WorkbookFactory.create(fis); 
+            Workbook wb = WorkbookFactory.create(fis);
             Sheet ws = wb.getSheetAt(0);
-            
+
             int colNum = ws.getRow(0).getLastCellNum();
-            
+
            //recorro cabecera
                 Row row = ws.getRow(0);
                     for (int j = 0; j < colNum; j++){
                         Cell cell = row.getCell(j);
-                        
+
                         try{
                             //guardo la cabecera detectada
                             String value = cell.toString();
                             array.add(j,value);
-                            
-                        }catch(NullPointerException ex){ 
+
+                        }catch(NullPointerException ex){
                             //ante la posibilidad de que venga sucio el archivo y el conteo de cabecera este equivocado
                             array.add(j,"vacio");
                         }
                     }
-                    
-            
-                
+
+
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ReadXLS.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -149,40 +145,40 @@ public class ReadXLS extends FileReader{
                 Logger.getLogger(ReadXLS.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return array; 
+        return array;
     }
 
-    
-    
+
+
     @Override
     public boolean hasRow() {
-        
+
         boolean empty = false;
-        try {        
+        try {
             FileInputStream fis = null;
             File excel =  new File (path);
             fis = new FileInputStream(excel);
-            Workbook wb = WorkbookFactory.create(fis); 
+            Workbook wb = WorkbookFactory.create(fis);
             Sheet ws = wb.getSheetAt(0);
-           
+
                 int Num = ws.getLastRowNum()+1;
                 //System.out.println(Num + " - " + rowposition);
                 if(Num-rowposition>0 && Num>1){
-                    
+
                      empty = true;
                      //System.out.println("hay " + (Num-rowposition) + " filas");
                      int colNum = ws.getRow(0).getLastCellNum();
                      setNumCol(colNum);
-                
+
                 }else{
-                
+
                      empty = false;
                      System.out.println("no hay filas");
-                
+
                 }
-               
-            
-            
+
+
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ReadXLS.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -192,19 +188,19 @@ public class ReadXLS extends FileReader{
         }
         return empty;
     }
-    
+
     public void run() {
         FileInputStream fis = null;
         try {
             File excel =  new File (path);
             fis = new FileInputStream(excel);
-            Workbook wb = WorkbookFactory.create(fis); 
+            Workbook wb = WorkbookFactory.create(fis);
             Sheet ws = wb.getSheetAt(0);
             int rowNum = ws.getLastRowNum() + 1;
             int colNum = ws.getRow(0).getLastCellNum();
             setNumCol(colNum);
             String [][] data = new String [rowNum] [colNum];
-            
+
                 Row row = ws.getRow(rowposition);
                     for (int j = 0; j < colNum; j++){
                         Cell cell = row.getCell(j);
@@ -213,7 +209,7 @@ public class ReadXLS extends FileReader{
                         try{
                              cellType = cell.getCellType();
                         }catch(NullPointerException e){
-                        
+
                              cellType = Cell.CELL_TYPE_BLANK;
                         }
                         switch (cellType) {
@@ -231,7 +227,7 @@ public class ReadXLS extends FileReader{
                                     DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
                                     // extraigo fecha de la celda
-                                    Date date = cell.getDateCellValue();       
+                                    Date date = cell.getDateCellValue();
                                     //aplico formato
                                     value = df.format(date);
                                 } else {
@@ -243,24 +239,24 @@ public class ReadXLS extends FileReader{
                             case Cell.CELL_TYPE_BLANK:
                                 value = "";
                                 break;
-                                
+
                             case Cell.CELL_TYPE_ERROR:
                                 value = "";
-                                break;    
+                                break;
 
                             case Cell.CELL_TYPE_BOOLEAN:
                                 value = Boolean.toString(cell.getBooleanCellValue());
                                 break;
 
                             }
-                        
+
                         rowToArray.add(j,value);
                         //System.out.println ("posicion: " + j + " - valor: " + rowToArray.get(j));
                     }
-                    
+
             rowposition  = rowposition+1;
             //System.out.println("posicion " + rowposition);
-                
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ReadXLS.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -279,7 +275,7 @@ public class ReadXLS extends FileReader{
 
     @Override
     void move() {
-        
+
         DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH.mm");
         Date date = new Date();
         try{
@@ -299,15 +295,15 @@ public class ReadXLS extends FileReader{
 
     @Override
     void delete() {
-        
+
     }
 
     @Override
     void close() {
-        
+
     }
-    
-    
-     
-    
+
+
+
+
 }

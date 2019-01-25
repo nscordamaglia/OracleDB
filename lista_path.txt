@@ -1,0 +1,6 @@
+y://Vtex/Proponi_Product_Play.txt;txt;pap
+y://Vtex/Proponi_provider_Equipos.txt;txt;pte
+y://Vtex/Proponi_provider_PlanesyServicios.txt;txt;ptpys
+y://Vtex/Proponi_Product_BAF.txt;txt;pab
+y://Vtex/Reporte Product Vtex.xls;xls;vtex
+y://Vtex/Argentina_Digital.xls;xls;th
